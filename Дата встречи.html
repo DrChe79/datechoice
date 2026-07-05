@@ -1,0 +1,476 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Когда встречаемся?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EFF3EF;
+  --card:#FFFFFF;
+  --ink:#182A2F;
+  --ink-soft:#5B6F74;
+  --line:#DCE4DE;
+  --yes:#2E9E63;
+  --yes-soft:#E2F3E9;
+  --maybe:#E8A33D;
+  --maybe-soft:#FBF0DC;
+  --no:#D96060;
+  --no-soft:#F9E6E6;
+  --accent:#14555F;
+  --accent-ink:#0E3A41;
+  --best:#F3FBEF;
+  --radius:14px;
+  --font-body:"Golos Text",system-ui,sans-serif;
+  --font-display:"Unbounded",var(--font-body);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 64px}
+
+/* ---------- шапка ---------- */
+header{
+  background:var(--accent-ink);
+  color:#F2F7F5;
+  padding:28px 16px 34px;
+  margin-bottom:24px;
+}
+header .inner{max-width:860px;margin:0 auto}
+.eyebrow{
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:#9CC4BC;font-weight:600;margin-bottom:8px;
+}
+h1{
+  font-family:var(--font-display);
+  font-weight:700;font-size:clamp(22px,4.5vw,34px);
+  margin:0;line-height:1.2;overflow-wrap:anywhere;
+}
+.subnote{color:#B9D2CC;margin-top:8px;font-size:14px}
+
+/* ---------- карточки ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:20px;
+}
+.card h2{
+  font-family:var(--font-display);font-weight:500;
+  font-size:17px;margin:0 0 14px;
+}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input[type=text],input[type=date],input[type=time]{
+  width:100%;padding:10px 12px;
+  border:1.5px solid var(--line);border-radius:10px;
+  font:inherit;background:#FBFDFB;color:var(--ink);
+}
+input:focus-visible,button:focus-visible{
+  outline:3px solid #7FB9AE;outline-offset:2px;
+}
+.date-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.date-row input[type=date]{flex:1.4}
+.date-row input[type=time]{flex:1}
+.icon-btn{
+  border:none;background:var(--no-soft);color:var(--no);
+  width:38px;height:38px;border-radius:10px;
+  font-size:18px;cursor:pointer;flex:none;
+}
+.btn{
+  font:inherit;font-weight:600;cursor:pointer;
+  border:none;border-radius:10px;
+  padding:11px 20px;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#0F464E}
+.btn-ghost{background:transparent;color:var(--accent);border:1.5px solid var(--line)}
+.btn-ghost:hover{border-color:var(--accent)}
+.btn-danger{background:transparent;color:var(--no);border:1.5px solid var(--line)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.hint{font-size:13px;color:var(--ink-soft);margin-top:10px}
+
+/* ---------- голосование ---------- */
+.vote-item{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:12px 0;border-bottom:1px solid var(--line);
+  flex-wrap:wrap;
+}
+.vote-item:last-of-type{border-bottom:none}
+.vote-date{font-weight:600}
+.vote-date small{display:block;font-weight:400;color:var(--ink-soft);font-size:13px}
+.tri{display:flex;gap:6px}
+.tri button{
+  font:inherit;font-weight:700;cursor:pointer;
+  border:1.5px solid var(--line);background:#FBFDFB;color:var(--ink-soft);
+  border-radius:9px;min-width:46px;padding:8px 0;font-size:15px;
+  transition:transform .08s ease;
+}
+.tri button:active{transform:scale(.94)}
+.tri button[data-on="y"]{background:var(--yes);border-color:var(--yes);color:#fff}
+.tri button[data-on="m"]{background:var(--maybe);border-color:var(--maybe);color:#fff}
+.tri button[data-on="n"]{background:var(--no);border-color:var(--no);color:#fff}
+
+/* ---------- матрица результатов ---------- */
+.matrix-scroll{overflow-x:auto;margin-top:6px}
+table{border-collapse:separate;border-spacing:0;min-width:100%}
+th,td{padding:9px 10px;text-align:center;font-size:14px;white-space:nowrap}
+th{font-weight:600;color:var(--ink-soft);font-size:13px}
+thead th{border-bottom:1.5px solid var(--line)}
+tbody td:first-child,thead th:first-child{
+  text-align:left;position:sticky;left:0;background:var(--card);
+  font-weight:600;color:var(--ink);max-width:160px;
+  overflow:hidden;text-overflow:ellipsis;
+}
+.cell{width:26px;height:26px;border-radius:7px;display:inline-block;line-height:26px;font-weight:700}
+.cell.y{background:var(--yes-soft);color:var(--yes)}
+.cell.m{background:var(--maybe-soft);color:#B47B1E}
+.cell.n{background:var(--no-soft);color:var(--no)}
+.cell.e{background:#F0F2F0;color:#B4BEB8}
+tfoot td{border-top:1.5px solid var(--line);font-weight:700}
+col.best-col{background:var(--best)}
+.best-tag{
+  display:inline-block;background:var(--yes);color:#fff;
+  font-size:11px;font-weight:700;letter-spacing:.05em;
+  border-radius:20px;padding:2px 9px;margin-top:4px;
+}
+.winner-line{
+  margin-top:14px;padding:12px 14px;border-radius:10px;
+  background:var(--yes-soft);color:#1C5B3B;font-weight:600;font-size:15px;
+}
+.empty{color:var(--ink-soft);font-size:14px;padding:8px 0}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.toast{
+  position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+  background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;
+  font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;
+  z-index:9;
+}
+.toast.show{opacity:1}
+.share-note{
+  font-size:13px;color:var(--ink-soft);
+  border-left:3px solid var(--maybe);padding:2px 0 2px 10px;margin-top:16px;
+}
+.hidden{display:none !important}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+@media (max-width:520px){
+  .tri button{min-width:56px;padding:11px 0}
+  .vote-item{align-items:flex-start}
+}
+</style>
+
+<header>
+  <div class="inner">
+    <div class="eyebrow">Планировщик встречи</div>
+    <h1 id="hTitle">Когда встречаемся?</h1>
+    <div class="subnote" id="hSub">Отметьте даты, которые вам подходят — лучший вариант определится сам.</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ЭКРАН 1: создание -->
+  <section class="card" id="setup">
+    <h2>Создать опрос</h2>
+    <label for="evTitle">Название встречи</label>
+    <input type="text" id="evTitle" placeholder="Например: День рождения / планёрка / шашлыки" maxlength="80">
+    <label>Варианты дат</label>
+    <div id="dateList"></div>
+    <button class="btn btn-ghost" id="addDate" type="button">+ Добавить дату</button>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="createBtn" type="button">Создать опрос</button>
+    </div>
+    <p class="hint">Время указывать не обязательно. После создания все, кто откроет этот опрос, смогут проголосовать.</p>
+  </section>
+
+  <!-- ЭКРАН 2: голосование -->
+  <section class="card hidden" id="voting">
+    <h2>Ваш голос</h2>
+    <label for="myName">Ваше имя</label>
+    <input type="text" id="myName" placeholder="Как вас записать в таблице" maxlength="40">
+    <div id="voteRows"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="saveVote" type="button">Сохранить мой голос</button>
+    </div>
+    <p class="hint">✓ — подходит · ± — если что, смогу · ✗ — не подходит. Нажимайте на кнопки напротив каждой даты.</p>
+  </section>
+
+  <!-- Результаты -->
+  <section class="card hidden" id="results">
+    <h2>Кто когда может</h2>
+    <div class="toolbar">
+      <button class="btn btn-ghost" id="refreshBtn" type="button">↻ Обновить голоса</button>
+      <button class="btn btn-danger" id="resetBtn" type="button">Сбросить опрос</button>
+    </div>
+    <div class="matrix-scroll" id="matrix"></div>
+    <div id="winner"></div>
+    <p class="share-note">Голоса видны всем, у кого открыт этот опрос. Чтобы собрать группу — опубликуйте артефакт и отправьте ссылку.</p>
+  </section>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- хранилище: общее для всех участников, с запасным режимом ---------- */
+const mem = {};                 // запасной вариант, если storage недоступен
+let storageOk = true;
+
+async function sGet(key, shared){
+  if(!storageOk || !window.storage){ return mem[key] ?? null; }
+  try{
+    const r = await window.storage.get(key, !!shared);
+    return r ? r.value : null;
+  }catch(e){ return null; }
+}
+async function sSet(key, val, shared){
+  if(window.storage){
+    try{ await window.storage.set(key, val, !!shared); return true; }
+    catch(e){ storageOk = false; }
+  }
+  mem[key] = val; return true;
+}
+async function sDel(key, shared){
+  if(window.storage){ try{ await window.storage.delete(key, !!shared); return; }catch(e){} }
+  delete mem[key];
+}
+async function sList(prefix, shared){
+  if(window.storage){
+    try{
+      const r = await window.storage.list(prefix, !!shared);
+      return r && r.keys ? r.keys : [];
+    }catch(e){}
+  }
+  return Object.keys(mem).filter(k=>k.startsWith(prefix));
+}
+
+const EVENT_KEY = "meetup-event";
+const VOTE_PREFIX = "meetup-vote:";
+const encName = n => "meetup-vote:" + encodeURIComponent(n).replace(/'/g,"%27");
+
+/* ---------- состояние ---------- */
+let event_ = null;        // {title, dates:[{id,date,time}]}
+let votes = [];           // [{name, choices:{id:'y'|'m'|'n'}}]
+let myChoices = {};
+
+const $ = id => document.getElementById(id);
+const toast = msg => {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("show"), 2200);
+};
+
+const MONTHS = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+const DAYS = ["вс","пн","вт","ср","чт","пт","сб"];
+function fmtDate(iso, time){
+  if(!iso) return "";
+  const d = new Date(iso + "T12:00:00");
+  let s = d.getDate() + " " + MONTHS[d.getMonth()] + ", " + DAYS[d.getDay()];
+  if(time) s += " · " + time;
+  return s;
+}
+
+/* ---------- экран создания ---------- */
+function addDateRow(){
+  const row = document.createElement("div");
+  row.className = "date-row";
+  row.innerHTML = '<input type="date" aria-label="Дата"><input type="time" aria-label="Время (необязательно)"><button class="icon-btn" type="button" aria-label="Удалить дату">✕</button>';
+  row.querySelector(".icon-btn").onclick = ()=>row.remove();
+  $("dateList").appendChild(row);
+}
+
+async function createEvent(){
+  const title = $("evTitle").value.trim() || "Встреча";
+  const rows = [...document.querySelectorAll("#dateList .date-row")];
+  const dates = [];
+  rows.forEach((r,i)=>{
+    const d = r.querySelector('input[type=date]').value;
+    const t = r.querySelector('input[type=time]').value;
+    if(d) dates.push({id:"d"+i+"_"+d, date:d, time:t||""});
+  });
+  if(!dates.length){ toast("Добавьте хотя бы одну дату"); return; }
+  dates.sort((a,b)=>a.date.localeCompare(b.date));
+  event_ = {title, dates, created:Date.now()};
+  await sSet(EVENT_KEY, JSON.stringify(event_), true);
+  toast("Опрос создан");
+  showVoting();
+}
+
+/* ---------- экран голосования ---------- */
+function showSetup(){
+  $("setup").classList.remove("hidden");
+  $("voting").classList.add("hidden");
+  $("results").classList.add("hidden");
+  $("hTitle").textContent = "Когда встречаемся?";
+  $("hSub").textContent = "Создайте опрос: добавьте варианты дат и отправьте друзьям.";
+  if(!$("dateList").children.length){ addDateRow(); addDateRow(); addDateRow(); }
+}
+
+function showVoting(){
+  $("setup").classList.add("hidden");
+  $("voting").classList.remove("hidden");
+  $("results").classList.remove("hidden");
+  $("hTitle").textContent = event_.title;
+  $("hSub").textContent = "Отметьте даты, которые вам подходят — лучший вариант определится сам.";
+  renderVoteRows();
+  renderMatrix();
+}
+
+function renderVoteRows(){
+  const box = $("voteRows"); box.innerHTML = "";
+  event_.dates.forEach(d=>{
+    const item = document.createElement("div");
+    item.className = "vote-item";
+    const lbl = document.createElement("div");
+    lbl.className = "vote-date";
+    lbl.textContent = fmtDate(d.date, d.time);
+    const tri = document.createElement("div");
+    tri.className = "tri";
+    [["y","✓","Подходит"],["m","±","Возможно"],["n","✗","Не подходит"]].forEach(([v,sym,title])=>{
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = sym; b.title = title;
+      b.setAttribute("aria-label", title + ": " + fmtDate(d.date,d.time));
+      if(myChoices[d.id] === v) b.dataset.on = v;
+      b.onclick = ()=>{
+        myChoices[d.id] = v;
+        tri.querySelectorAll("button").forEach(x=>delete x.dataset.on);
+        b.dataset.on = v;
+      };
+      tri.appendChild(b);
+    });
+    item.append(lbl, tri);
+    box.appendChild(item);
+  });
+}
+
+async function saveVote(){
+  const name = $("myName").value.trim();
+  if(!name){ toast("Введите имя"); $("myName").focus(); return; }
+  if(!Object.keys(myChoices).length){ toast("Отметьте хотя бы одну дату"); return; }
+  await sSet(encName(name), JSON.stringify({name, choices:myChoices, updated:Date.now()}), true);
+  await sSet("meetup-myname", name, false);
+  toast("Голос сохранён ✓");
+  await loadVotes();
+  renderMatrix();
+}
+
+/* ---------- результаты ---------- */
+async function loadVotes(){
+  votes = [];
+  const keys = await sList(VOTE_PREFIX, true);
+  for(const k of keys){
+    const raw = await sGet(k, true);
+    if(!raw) continue;
+    try{ const v = JSON.parse(raw); if(v && v.name) votes.push(v); }catch(e){}
+  }
+  votes.sort((a,b)=>a.name.localeCompare(b.name,"ru"));
+}
+
+function score(dateId){
+  let y=0,m=0,n=0;
+  votes.forEach(v=>{
+    const c = v.choices && v.choices[dateId];
+    if(c==="y")y++; else if(c==="m")m++; else if(c==="n")n++;
+  });
+  return {y,m,n,total:y*2+m};
+}
+
+function renderMatrix(){
+  const box = $("matrix");
+  if(!votes.length){
+    box.innerHTML = '<div class="empty">Пока никто не проголосовал. Будьте первым!</div>';
+    $("winner").innerHTML = "";
+    return;
+  }
+  const scores = event_.dates.map(d=>score(d.id));
+  const best = Math.max(...scores.map(s=>s.total));
+  const bestIdx = scores.map((s,i)=>s.total===best && best>0 ? i : -1).filter(i=>i>=0);
+
+  let html = "<table><colgroup><col>";
+  event_.dates.forEach((d,i)=>{
+    html += '<col' + (bestIdx.includes(i) ? ' class="best-col"' : '') + '>';
+  });
+  html += "</colgroup><thead><tr><th>Участник</th>";
+  event_.dates.forEach((d,i)=>{
+    html += "<th>" + fmtDate(d.date,d.time) +
+      (bestIdx.includes(i) ? '<br><span class="best-tag">лучший</span>' : "") + "</th>";
+  });
+  html += "</tr></thead><tbody>";
+  votes.forEach(v=>{
+    html += "<tr><td>" + escapeHtml(v.name) + "</td>";
+    event_.dates.forEach(d=>{
+      const c = v.choices && v.choices[d.id];
+      const cls = c==="y"?"y":c==="m"?"m":c==="n"?"n":"e";
+      const sym = c==="y"?"✓":c==="m"?"±":c==="n"?"✗":"·";
+      html += '<td><span class="cell ' + cls + '">' + sym + "</span></td>";
+    });
+    html += "</tr>";
+  });
+  html += "</tbody><tfoot><tr><td>Итого ✓</td>";
+  scores.forEach(s=>{ html += "<td>" + s.y + (s.m ? " <small style='font-weight:400;color:var(--ink-soft)'>+" + s.m + "±</small>" : "") + "</td>"; });
+  html += "</tr></tfoot></table>";
+  box.innerHTML = html;
+
+  if(bestIdx.length && best>0){
+    const names = bestIdx.map(i=>fmtDate(event_.dates[i].date, event_.dates[i].time)).join(" или ");
+    $("winner").innerHTML = '<div class="winner-line">🏆 Лучший вариант: ' + escapeHtml(names) + "</div>";
+  } else {
+    $("winner").innerHTML = "";
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* ---------- сброс ---------- */
+async function resetAll(){
+  if(!confirm("Удалить опрос и все голоса? Это действие нельзя отменить.")) return;
+  const keys = await sList(VOTE_PREFIX, true);
+  for(const k of keys) await sDel(k, true);
+  await sDel(EVENT_KEY, true);
+  event_ = null; votes = []; myChoices = {};
+  $("dateList").innerHTML = "";
+  showSetup();
+  toast("Опрос удалён");
+}
+
+/* ---------- запуск ---------- */
+async function init(){
+  $("addDate").onclick = addDateRow;
+  $("createBtn").onclick = createEvent;
+  $("saveVote").onclick = saveVote;
+  $("resetBtn").onclick = resetAll;
+  $("refreshBtn").onclick = async ()=>{ await loadVotes(); renderMatrix(); toast("Обновлено"); };
+
+  const raw = await sGet(EVENT_KEY, true);
+  if(raw){
+    try{ event_ = JSON.parse(raw); }catch(e){}
+  }
+  if(event_){
+    const savedName = await sGet("meetup-myname", false);
+    if(savedName){
+      $("myName").value = savedName;
+      const mine = await sGet(encName(savedName), true);
+      if(mine){ try{ myChoices = JSON.parse(mine).choices || {}; }catch(e){} }
+    }
+    await loadVotes();
+    showVoting();
+  } else {
+    showSetup();
+  }
+  if(!window.storage){
+    toast("Внимание: общее хранилище недоступно, голоса не сохранятся");
+  }
+}
+
+init();
+})();
+</script>
